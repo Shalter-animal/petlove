@@ -17,7 +17,7 @@ export default function Home() {
           News
         </Link>
       </nav>
-      <h1>Hello world</h1>
+      <h1>Hello</h1>
     </main>
   );
 }
