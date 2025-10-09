@@ -38,7 +38,7 @@ export function Header() {
           <Image
             src={UserIcon}
             alt="User icon"
-            className="h-7 w-7 md:h-12 md:w-12"
+            className="h-8 w-8 md:h-12 md:w-12"
           />
           <p className="hidden md:flex h-fit font-bold text-[20px]">Anna</p>
         </Link>

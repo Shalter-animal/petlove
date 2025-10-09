@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="min-h-[calc(100dvh-104px)] mt-5 mx-4 flex flex-col items-center justify-center bg-primary rounded-[30px]">
+    <div className="min-h-[calc(100dvh-104px)] md:min-h-[calc(100dvh-144px)] mt-5 mx-4 md:mx-8 flex flex-col items-center justify-center bg-primary rounded-[30px]">
       <Image
         src={NotFoundImage}
         alt="Not found image"
