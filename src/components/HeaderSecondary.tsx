@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import LogoSecondary from "../../public/logo/logo-secondary-mobile.svg";
@@ -6,10 +8,16 @@ import MenuIcon from "../../public/icons/menu-white-icon.svg";
 import UserIcon from "../../public/icons/user-icon.svg";
 import { Button } from "./Button";
 import { NAV_LINKS } from "@/constans/navigation";
+import { useState } from "react";
+import { Sidebar } from "./Sidebar";
 
 export function HeaderSecondary() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
+
   return (
-    <header className="w-full bg-transparent flex items-center justify-between mt-5">
+    <header className="relative w-full bg-transparent flex items-center justify-between mt-5">
       <Link href="/" className="">
         <Image
           src={LogoSecondary}
@@ -52,8 +60,11 @@ export function HeaderSecondary() {
           src={MenuIcon}
           alt="Menu icon"
           className="h-6 w-6 md:h-9 md:w-9 xl:hidden cursor-pointer"
+          onClick={toggleMenu}
         />
       </div>
+
+      {isMenuOpen && <Sidebar toggleMenu={toggleMenu} />}
     </header>
   );
 }

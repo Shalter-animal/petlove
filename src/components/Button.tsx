@@ -8,8 +8,9 @@ export function Button(props: Props) {
   const { children, variant = "primary", className = "" } = props;
 
   const variants = {
-    primary: "bg-primary text-white hover:bg-[#FFF4DF] hover:text-primary",
-    secondary: "bg-secondary text-primary hover:bg-[#FBE7C1]",
+    primary:
+      "cursor-pointer bg-primary text-white hover:bg-[#FFF4DF] hover:text-primary",
+    secondary: "cursor-pointer bg-secondary text-primary hover:bg-[#FBE7C1]",
   };
   return (
     <div

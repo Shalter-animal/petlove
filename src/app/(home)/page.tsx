@@ -6,7 +6,7 @@ import { HeaderSecondary } from "@/components/HeaderSecondary";
 export default function Home() {
   return (
     <main className="h-[calc(100dvh-20px)] md:h-[calc(100dvh-35px)] flex flex-col  px-4 pt-2.5 md:px-8 md:pt-3.5">
-      <div className="bg-primary flex-1 rounded-4xl md:rounded-[60px] flex flex-col items-center px-5 md:px-8 py-8">
+      <div className="bg-primary flex-1 rounded-4xl md:rounded-[60px] flex flex-col items-center px-5 md:px-8 pb-8">
         <div className="max-w-[1280px] flex flex-col items-center">
           <HeaderSecondary />
           <div className="flex flex-col md:items-start md:text-left md:flex-1 md:mt-10 xl:flex-row xl:items-center xl:justify-between">
@@ -21,7 +21,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
       <div className="flex-1">
         <Image
           src={HomeImg}
