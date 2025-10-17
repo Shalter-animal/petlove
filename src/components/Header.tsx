@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import Logo from "../../public/logo/logo-primary-mobile.svg";
@@ -6,8 +8,14 @@ import MenuIcon from "../../public/icons/menu-icon.svg";
 import UserIcon from "../../public/icons/user-icon.svg";
 import { Button } from "./Button";
 import { NAV_LINKS } from "@/constans/navigation";
+import { Sidebar } from "./Sidebar";
+import { useState } from "react";
 
 export function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
+
   return (
     <header className="relative mt-[34px] md:mt-[42px] w-full bg-background flex items-center justify-between px-5 md:px-8">
       <Link href="/" className="">
@@ -46,8 +54,11 @@ export function Header() {
           src={MenuIcon}
           alt="Menu icon"
           className="h-6 w-6 md:h-9 md:w-9 xl:hidden cursor-pointer"
+          onClick={toggleMenu}
         />
       </div>
+
+      {isMenuOpen && <Sidebar toggleMenu={toggleMenu} />}
     </header>
   );
 }

@@ -9,7 +9,7 @@ import UserIcon from "../../public/icons/user-icon.svg";
 import { Button } from "./Button";
 import { NAV_LINKS } from "@/constans/navigation";
 import { useState } from "react";
-import { Sidebar } from "./Sidebar";
+import { SidebarSecondary } from "./SidebarSecondary";
 
 export function HeaderSecondary() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -64,7 +64,7 @@ export function HeaderSecondary() {
         />
       </div>
 
-      {isMenuOpen && <Sidebar toggleMenu={toggleMenu} />}
+      {isMenuOpen && <SidebarSecondary toggleMenu={toggleMenu} />}
     </header>
   );
 }

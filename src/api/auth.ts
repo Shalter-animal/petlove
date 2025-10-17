@@ -1,0 +1,41 @@
+import { apiFetch } from "./client";
+
+interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface LoginData {
+  email: string;
+  password: string;
+}
+
+export async function register(userData: RegisterData) {
+  return apiFetch("/auth/register", {
+    method: "POST",
+    body: JSON.stringify(userData),
+  });
+}
+
+export async function login(credentials: LoginData) {
+  const data = await apiFetch<{ token: string }>("/auth/login", {
+    method: "POST",
+    body: JSON.stringify(credentials),
+  });
+
+  if (typeof window !== "undefined") {
+    localStorage.setItem("token", data.token);
+  }
+
+  return data;
+}
+
+export async function getProfile() {
+  return apiFetch("/auth/me");
+}
+
+export function logout() {
+  if (typeof window !== "undefined") localStorage.removeItem("token");
+}
