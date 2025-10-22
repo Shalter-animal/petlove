@@ -22,6 +22,7 @@ import {
   PaginationPrevious,
   PaginationPreviousEnd,
 } from "@/components/ui/pagination";
+import { cn } from "@/lib/utils";
 
 export default function News() {
   const [searchItem, setSearchItem] = useState("");
@@ -109,12 +110,20 @@ export default function News() {
                 <PaginationPreviousEnd
                   href="#"
                   onClick={() => handlePageChange(1)}
+                  className={cn(
+                    currentPage === 1 &&
+                      "opacity-50 pointer-events-none cursor-default"
+                  )}
                 />
               </PaginationItem>
               <PaginationItem>
                 <PaginationPrevious
                   href="#"
                   onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
+                  className={cn(
+                    currentPage === 1 &&
+                      "opacity-50 pointer-events-none cursor-default"
+                  )}
                 />
               </PaginationItem>
 
@@ -126,6 +135,9 @@ export default function News() {
                       href="#"
                       isActive={currentPage === page}
                       onClick={() => handlePageChange(page)}
+                      className={cn(
+                        currentPage === page ? "bg-primary text-white" : ""
+                      )}
                     >
                       {page}
                     </PaginationLink>
@@ -139,12 +151,20 @@ export default function News() {
                   onClick={() =>
                     handlePageChange(Math.min(currentPage + 1, totalPages))
                   }
+                  className={cn(
+                    currentPage === totalPages &&
+                      "opacity-50 pointer-events-none cursor-default"
+                  )}
                 />
               </PaginationItem>
               <PaginationItem>
                 <PaginationNextEnd
                   href="#"
                   onClick={() => handlePageChange(totalPages)}
+                  className={cn(
+                    currentPage === totalPages &&
+                      "opacity-50 pointer-events-none cursor-default"
+                  )}
                 />
               </PaginationItem>
             </PaginationContent>
