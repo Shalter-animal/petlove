@@ -1,6 +1,8 @@
 "use client";
 import { Header } from "@/components/Header";
 import { SearchInput } from "@/components/SearchInput";
+import { NewsData } from "@/data/NewsData";
+import { highlightMatch } from "@/utils/highlightMatch";
 import Image from "next/image";
 import {
   Card,
@@ -9,40 +11,23 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import Link from "next/link";
-import { useState } from "react";
-
-const NewsData = [
-  {
-    _id: "658b694505a6bcd9b9379466",
-    imgUrl: "/news/dcd9ca77a733d93b6a4ae0f9e55320f97e2455c6.png",
-    title: "What I Learned Dogsitting for New York City’s Opulent Elite",
-    text: "In January, I fell in love with someone. It was the last thing I’d expect and caught me completely off guard. He has sandy blond hair with flecks of gray and gorgeous, sad eyes.",
-    date: "2023-04-11T09:00:18+0000",
-    url: "https://www.nytimes.com/2023/04/11/magazine/dogsitting-rich-new-york.html",
-    id: "nyt://article/8d29f1fc-d146-509d-8ceb-5a5b17d7886b",
-  },
-  {
-    _id: "658b694505a6bcd9b9379465",
-    imgUrl: "/news/dcd9ca77a733d93b6a4ae0f9e55320f97e2455c6.png",
-    title: "When Helpless Fish Need a Hero, She Answers the Call",
-    text: "Three hundred goldfish in a hospital basement, a suckermouth at the airport: When fish are in crisis, a Bronx beautician and a partner in Pennsylvania ride to the rescue.",
-    date: "2023-04-11T09:00:18+0000",
-    url: "https://www.nytimes.com/2023/04/11/magazine/dogsitting-rich-new-york.html",
-    id: "nyt://article/8d29f1fc-d146-509d-8ceb-5a5b17d7886b",
-  },
-  {
-    _id: "658b694505a6bcd9b9379464",
-    imgUrl: "/news/dcd9ca77a733d93b6a4ae0f9e55320f97e2455c6.png",
-    title: "3 Dogs Die After Eating Poisoned Meatballs at a Race in France",
-    text: "In a city of yawning class inequality, some side hustles let you glimpse how the other half lives.",
-    date: "2023-04-11T09:00:18+0000",
-    url: "https://www.nytimes.com/2023/04/11/magazine/dogsitting-rich-new-york.html",
-    id: "nyt://article/8d29f1fc-d146-509d-8ceb-5a5b17d7886b",
-  },
-];
+import { useMemo, useState } from "react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationNextEnd,
+  PaginationPrevious,
+  PaginationPreviousEnd,
+} from "@/components/ui/pagination";
 
 export default function News() {
   const [searchItem, setSearchItem] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const itemsPerPage = 6;
 
   const filteredNews = NewsData.filter(
     (news) =>
@@ -50,25 +35,20 @@ export default function News() {
       news.text.toLowerCase().includes(searchItem.toLowerCase())
   );
 
-  const highlightMatch = (text: string, query: string) => {
-    if (!query.trim()) return text;
+  const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const visibleItems = filteredNews.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
-    const regex = new RegExp(`(${query})`, "gi");
-    const parts = text.split(regex);
-
-    return parts.map((part, index) =>
-      part.toLowerCase() === query.toLowerCase() ? (
-        <mark
-          key={index}
-          className="bg-yellow-200 text-black font-semibold rounded-sm"
-        >
-          {part}
-        </mark>
-      ) : (
-        part
-      )
-    );
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
+
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [searchItem]);
 
   return (
     <>
@@ -84,8 +64,8 @@ export default function News() {
           />
         </div>
         <div className="mt-6 grid grid-cols-1 gap-4 justify-items-center md:grid-cols-2 xl:grid-cols-3">
-          {filteredNews.length > 0 ? (
-            filteredNews.map((news) => (
+          {visibleItems.length > 0 ? (
+            visibleItems.map((news) => (
               <Card key={news._id} className="w-[335px]">
                 <CardHeader className="p-0">
                   <Image
@@ -120,6 +100,56 @@ export default function News() {
             </p>
           )}
         </div>
+
+        {/* 📄 Пагінація */}
+        {filteredNews.length > itemsPerPage && (
+          <Pagination className="mt-8">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPreviousEnd
+                  href="#"
+                  onClick={() => handlePageChange(1)}
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
+                />
+              </PaginationItem>
+
+              {Array.from({ length: totalPages }).map((_, index) => {
+                const page = index + 1;
+                return (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      href="#"
+                      isActive={currentPage === page}
+                      onClick={() => handlePageChange(page)}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
+
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={() =>
+                    handlePageChange(Math.min(currentPage + 1, totalPages))
+                  }
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNextEnd
+                  href="#"
+                  onClick={() => handlePageChange(totalPages)}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
       </main>
     </>
   );
