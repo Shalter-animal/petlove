@@ -38,8 +38,6 @@ export default function News() {
     if (page !== currentPage) setCurrentPage(page);
   };
 
-  console.log(news);
-
   const totalPages = news?.totalPages ?? 1;
 
   return (
