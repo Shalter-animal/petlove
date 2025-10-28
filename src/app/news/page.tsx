@@ -1,60 +1,53 @@
 "use client";
 import { Header } from "@/components/Header";
 import { SearchInput } from "@/components/SearchInput";
-import { NewsData } from "@/data/NewsData";
-import { highlightMatch } from "@/utils/highlightMatch";
-import Image from "next/image";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import Link from "next/link";
-import { useMemo, useState } from "react";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationNextEnd,
-  PaginationPrevious,
-  PaginationPreviousEnd,
-} from "@/components/ui/pagination";
-import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { getNews, NewsResponse } from "@/api/news";
+import { NewsCard } from "./NewsCard";
+import { MainPagination } from "@/components/MainPagination";
 
 export default function News() {
   const [searchItem, setSearchItem] = useState("");
+  const [news, setNewsData] = useState<NewsResponse | null>(null);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const itemsPerPage = 6;
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        setLoading(true);
+        const data = await getNews(currentPage, searchItem);
+        setNewsData(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchNews();
+  }, [currentPage, searchItem]);
 
-  const filteredNews = NewsData.filter(
+  const newsData = news?.results;
+  const filteredNews = newsData?.filter(
     (news) =>
       news.title.toLowerCase().includes(searchItem.toLowerCase()) ||
       news.text.toLowerCase().includes(searchItem.toLowerCase())
   );
 
-  const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const visibleItems = filteredNews.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
-
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    if (page !== currentPage) setCurrentPage(page);
   };
 
-  useMemo(() => {
-    setCurrentPage(1);
-  }, [searchItem]);
+  console.log(news);
+
+  const totalPages = news?.totalPages ?? 1;
 
   return (
     <>
       <Header />
       <main className="pt-16 px-5">
+        {loading && <p>Loading...</p>}
+
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <h1 className="font-bold text-[28px] leading-[28px] h-fit md:text-[54px] md:leading-[54px]">
             News
@@ -65,35 +58,9 @@ export default function News() {
           />
         </div>
         <div className="mt-6 grid grid-cols-1 gap-4 justify-items-center md:grid-cols-2 xl:grid-cols-3">
-          {visibleItems.length > 0 ? (
-            visibleItems.map((news) => (
-              <Card key={news._id} className="w-[335px]">
-                <CardHeader className="p-0">
-                  <Image
-                    src={news.imgUrl}
-                    alt="News Image"
-                    width={343}
-                    height={190}
-                    className="h-[190px] w-[335px] rounded-[15px]"
-                  />
-                </CardHeader>
-                <CardContent className="p-0">
-                  <h4 className="font-bold leading-[20px] tracking-[-0.02em] mb-3">
-                    {highlightMatch(news.title, searchItem)}
-                  </h4>
-                  <p className="font-medium text-sm leading-[18px] tracking-[-0.02em]">
-                    {highlightMatch(news.text, searchItem)}
-                  </p>
-                </CardContent>
-                <CardFooter className="p-0 flex justify-between">
-                  <p className="text-gray-700/50">
-                    {new Date(news.date).toLocaleDateString()}
-                  </p>
-                  <Link href={news.url} className="text-primary underline">
-                    Read more
-                  </Link>
-                </CardFooter>
-              </Card>
+          {filteredNews?.length ? (
+            filteredNews.map((news) => (
+              <NewsCard key={news._id} news={news} searchItem={searchItem} />
             ))
           ) : (
             <p className="text-gray-500 mt-10 col-span-full">
@@ -102,73 +69,12 @@ export default function News() {
           )}
         </div>
 
-        {/* 📄 Пагінація */}
-        {filteredNews.length > itemsPerPage && (
-          <Pagination className="mt-8">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPreviousEnd
-                  href="#"
-                  onClick={() => handlePageChange(1)}
-                  className={cn(
-                    currentPage === 1 &&
-                      "opacity-50 pointer-events-none cursor-default"
-                  )}
-                />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
-                  className={cn(
-                    currentPage === 1 &&
-                      "opacity-50 pointer-events-none cursor-default"
-                  )}
-                />
-              </PaginationItem>
-
-              {Array.from({ length: totalPages }).map((_, index) => {
-                const page = index + 1;
-                return (
-                  <PaginationItem key={page}>
-                    <PaginationLink
-                      href="#"
-                      isActive={currentPage === page}
-                      onClick={() => handlePageChange(page)}
-                      className={cn(
-                        currentPage === page ? "bg-primary text-white" : ""
-                      )}
-                    >
-                      {page}
-                    </PaginationLink>
-                  </PaginationItem>
-                );
-              })}
-
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={() =>
-                    handlePageChange(Math.min(currentPage + 1, totalPages))
-                  }
-                  className={cn(
-                    currentPage === totalPages &&
-                      "opacity-50 pointer-events-none cursor-default"
-                  )}
-                />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNextEnd
-                  href="#"
-                  onClick={() => handlePageChange(totalPages)}
-                  className={cn(
-                    currentPage === totalPages &&
-                      "opacity-50 pointer-events-none cursor-default"
-                  )}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+        {totalPages > 1 && (
+          <MainPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onChange={handlePageChange}
+          />
         )}
       </main>
     </>

@@ -14,7 +14,7 @@ export function Button(props: Props) {
   };
   return (
     <div
-      className={`${variants[variant]} ${className} "h-[42px] w-[150px] rounded-4xl flex items-center justify-center transition duration-300"`}
+      className={`${variants[variant]} ${className} "h-[42px] rounded-4xl flex items-center justify-center transition duration-300"`}
     >
       {children}
     </div>

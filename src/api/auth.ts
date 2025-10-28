@@ -15,21 +15,21 @@ interface LoginData {
 export async function register(userData: RegisterData) {
   return apiFetch("/auth/register", {
     method: "POST",
-    body: JSON.stringify(userData),
+    data: JSON.stringify(userData),
   });
 }
 
 export async function login(credentials: LoginData) {
-  const data = await apiFetch<{ token: string }>("/auth/login", {
+  const response = await apiFetch<{ token: string }>("/auth/login", {
     method: "POST",
-    body: JSON.stringify(credentials),
+    data: JSON.stringify(credentials),
   });
 
   if (typeof window !== "undefined") {
-    localStorage.setItem("token", data.token);
+    localStorage.setItem("token", response.data.token);
   }
 
-  return data;
+  return response;
 }
 
 export async function getProfile() {
